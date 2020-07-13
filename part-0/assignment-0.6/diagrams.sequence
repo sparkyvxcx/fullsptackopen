@@ -1,0 +1,10 @@
+note over browser:
+user click submit button
+form.onsubmit listener triggered
+new note added into notes array
+calling redrawNotes() render page
+add new note into <ul> list
+end note
+
+browser->server: HTTP GET https://fullstack-exampleapp.herokuapp.com/new_note_spa
+server-->browser: HTTP 201 Created
