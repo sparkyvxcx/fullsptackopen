@@ -24,5 +24,5 @@ My full stack open 2020 submissions
 
 ## [Part-3]
 
-- [ ]
-- [ ]
+- [x] [demo-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-3/demo-backend
+- [ ] [phonebook-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-3/phonebook-backend
