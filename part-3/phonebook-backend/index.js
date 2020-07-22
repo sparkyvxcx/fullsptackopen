@@ -1,9 +1,35 @@
 const express = require("express");
-const { response, request } = require("express");
+const morgan = require("morgan");
 const app = express();
 const PORT = 3001;
 
 app.use(express.json());
+// app.use(morgan("tiny"));
+
+morgan.token("type", function (req, res) {
+  return req.headers["content-type"];
+});
+
+// app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
+
+const requestLogger = function (tokens, req, res) {
+  if (req.method !== "POST") {
+    return null;
+  }
+  // console.log(req.body);
+  const data = JSON.stringify(req.body);
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, "content-length"),
+    "-",
+    tokens["response-time"](req, res),
+    "ms",
+    data,
+  ].join(" ");
+};
+app.use(morgan(requestLogger));
 
 let persons = [
   {
