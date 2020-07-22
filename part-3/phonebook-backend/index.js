@@ -1,8 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
+app.use(express.static("build"));
 app.use(express.json());
 // app.use(morgan("tiny"));
 
@@ -78,7 +79,7 @@ app.get("/ping", (request, response) => {
   response.send("pong");
 });
 
-// Info
+// Quary info
 app.get("/info", (request, response) => {
   const info = `
   <h3>Phonebook has info for ${persons.length} people</h3><h3>${Date()}</h3>`;

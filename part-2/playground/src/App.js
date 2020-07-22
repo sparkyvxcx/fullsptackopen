@@ -4,13 +4,8 @@ import Notification from "./components/Notification";
 import noteService from "./services/notes";
 
 const Footer = () => {
-  const footerStyle = {
-    color: "green",
-    fontStyple: "italic",
-    fontSize: 16,
-  };
   return (
-    <div style={footerStyle}>
+    <div id="footer">
       <br />
       <em>
         Note app, Department of Computer Science, University of Helsinki 2020
@@ -83,7 +78,12 @@ const App = (props) => {
 
   return (
     <div>
-      <h1>Notes</h1>
+      <h1>
+        Notes{" "}
+        <span role="img" aria-label="notes">
+          📝
+        </span>
+      </h1>
       <Notification message={errorMessage} />
       <div>
         <button onClick={handleSetShowAll}>
