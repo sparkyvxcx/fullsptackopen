@@ -6,3 +6,7 @@ part-2/phonebook-frontend/build
 
 part-3/heroku-backend/build
 part-3/phonebook-backend/build
+
+# environment file
+
+*/.env

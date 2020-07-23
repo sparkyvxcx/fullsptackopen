@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
+const Person = require("./modules/person");
 const PORT = process.env.PORT || 3001;
 
 app.use(express.static("build"));
@@ -87,11 +89,22 @@ app.get("/info", (request, response) => {
 });
 
 // Query all
+// 3.13: Phonebook database, step1
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  // response.json(persons);
+
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => {
+      console.log("Query:", error);
+      response.status(500).send("internal server error");
+    });
 });
 
 // Create
+// 3.14: Phonebook database, step2
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -101,51 +114,87 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  query = persons.find((person) => person.name === body.name);
-  if (query) {
-    return response.status(400).json({
-      error: "name must be unique!",
-    });
-  }
+  // query = persons.find((person) => person.name === body.name);
+  // if (query) {
+  //   return response.status(400).json({
+  //     error: "name must be unique!",
+  //   });
+  // }
 
-  const person = {
+  // const person = {
+  //   name: body.name,
+  //   number: body.number,
+  //   id: getRandomId(),
+  // };
+
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: getRandomId(),
-  };
+  });
 
-  persons = persons.concat(person);
+  // persons = persons.concat(person);
 
-  response.json(person);
+  // response.json(person);
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => {
+      console.log("Create:", error);
+      response.status(500).send("internal server error");
+    });
 });
 
 // Read
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
+  // const id = Number(request.params.id);
+  // const person = persons.find((person) => person.id === id);
 
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).json({
-      error: "The Requested Resource does not Exist!",
+  // if (person) {
+  //   response.json(person);
+  // } else {
+  //   response.status(404).json({
+  //     error: "The Requested Resource does not Exist!",
+  //   });
+  // }
+
+  const id = request.params.id;
+  Person.findById(id)
+    .then((person) => {
+      response.json(person);
+    })
+    .catch((error) => {
+      console.log(`Read: ${id}`, error);
+      response.status(500).send("internal server error");
     });
-  }
 });
 
 // Delete
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const before = persons.length;
-  persons = persons.filter((person) => person.id !== id);
+  // const id = Number(request.params.id);
+  // const before = persons.length;
+  // persons = persons.filter((person) => person.id !== id);
 
-  if (persons.length === before) {
-    response.status(404).json({
-      error: "The Requested Resource does not Exist!",
-    });
-  } else {
-    response.status(204).end();
-  }
+  // if (persons.length === before) {
+  //   response.status(404).json({
+  //     error: "The Requested Resource does not Exist!",
+  //   });
+  // } else {
+  //   response.status(204).end();
+  // }
+
+  const id = request.params.id;
+  Person.findOneAndDelete({ _id: id }, (err, person) => {
+    if (err) {
+      console.log(err);
+    } else {
+      response.json(person);
+    }
+  }).catch((error) => {
+    console.log(`Delete: ${id}`, error);
+    response.status(500).send("internal server error");
+  });
 });
 
 app.listen(PORT, () => {

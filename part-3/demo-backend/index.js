@@ -1,6 +1,29 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
+const PORT = process.env.PORT || 3001;
+const SECRET = process.env.PASSWORD || "58LTdCAEqafqKLp";
+
+const url = `mongodb+srv://fullstack:${SECRET}@cluster0.aphza.mongodb.net/fullstack?retryWrites=true&w=majority`;
+
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+});
+
+noteSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
+const Note = mongoose.model("Note", noteSchema);
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
@@ -49,7 +72,10 @@ app.get("/ping", (request, response) => {
 });
 
 app.get("/api/notes", (request, response) => {
-  response.json(notes);
+  Note.find({}).then((notes) => {
+    // console.log(notes);
+    response.json(notes);
+  });
 });
 
 app.get("/api/notes/:id", (request, response) => {
@@ -94,7 +120,6 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
