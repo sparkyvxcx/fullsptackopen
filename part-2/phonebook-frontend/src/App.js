@@ -125,7 +125,7 @@ const App = () => {
       personService
         .deleteEntry(id)
         .then((status_code) => {
-          if (status_code === 200) {
+          if (status_code === 204) {
             setPersons(persons.filter((person) => person.id !== id));
             let message = [
               `Information of ${person.name} is deleted from server`,
