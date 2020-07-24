@@ -229,3 +229,81 @@ Verify that the frontend works after making your changes.
 ### 3.18\*: Phonebook database step6
 
 Also update the handling of the api/persons/:id and info routes to use the database, and verify that they work directly with the browser, Postman, or VS Code REST client.
+
+## Exercises 3.19.-3.21.
+
+- [x] 3.19: Phonebook database, step7
+- [x] 3.20\*: Phonebook database, step8
+- [x] 3.21 Deploying the database backend to production
+
+### 3.19: Phonebook database, step7
+
+Install validator:
+
+```shell
+$ npm install --save mongoose-unique-validator
+```
+
+Add validator: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-3/phonebook-backend/modules/person.js#L2
+
+Disable warning prompt: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-3/phonebook-backend/modules/person.js#L6
+
+Add constraint into personSchema: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-3/phonebook-backend/modules/person.js#L20
+
+### 3.20\*: Phonebook database, step8
+
+Expand the validation: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-3/phonebook-backend/modules/person.js#L20
+
+Expand the frontend:
+
+- Catch create error: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-2/phonebook-frontend/src/App.js#L101
+- Catch update error: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-2/phonebook-frontend/src/App.js#L69
+
+Enable validators: https://github.com/sparkyvxcx/fullsptackopen/blob/master/part-3/phonebook-backend/index.js#L115
+
+### 3.21 Deploying the database backend to production
+
+Set environment variable:
+
+```shell
+$ heroku config:set MONGODB_URI="mongodb+srv://<dbuser>:<dbpassword>@<dbendpoint>/<dbname>?retryWrites=true&w=majority"
+```
+
+Heroku instance: https://dry-cliffs-82868.herokuapp.com/
+
+## Exercise 3.22.
+
+### 3.22: Lint configuration
+
+Install ESlint as a development dependency:
+
+```shell
+$ npm install eslint --save-dev
+```
+
+Create a separate npm script for linting:
+
+```json
+{
+  // ...
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    // ...
+    "lint": "eslint ."
+  }
+  // ...
+}
+```
+
+Ignore `build` direcotry:
+
+```shell
+$ echo "build" >> .eslintignore
+```
+
+Run eslint:
+
+```shell
+$ npm run lint
+```

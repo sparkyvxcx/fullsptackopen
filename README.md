@@ -22,7 +22,7 @@ My full stack open 2020 submissions
 - [x] [countries]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-2/countries
 - [x] [phonebook]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-2/phonebook
 
-## [Part-3]
+## [Part-3](part-3)
 
 - [x] [demo-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-3/demo-backend
-- [ ] [phonebook-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-3/phonebook-backend
+- [x] [phonebook-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-3/phonebook-backend

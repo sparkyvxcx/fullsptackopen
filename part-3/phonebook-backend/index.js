@@ -9,8 +9,8 @@ app.use(express.static("build"));
 app.use(express.json());
 // app.use(morgan("tiny"));
 
-morgan.token("type", function (req, res) {
-  return req.headers["content-type"];
+morgan.token("type", function (request) {
+  return request.headers["content-type"];
 });
 
 // app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
@@ -34,48 +34,6 @@ const requestLogger = function (tokens, req, res) {
 };
 app.use(morgan(requestLogger));
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "045-31235234",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-];
-
-const getRandomId = () => {
-  const range = persons.length * 100;
-  let id = 0;
-
-  while (true) {
-    id = Math.floor(Math.random() * Math.floor(range));
-    person = persons.find((person) => person.id === id);
-    if (!person) {
-      break;
-    } else {
-      // debug
-      // console.log("hit!", id, range);
-      continue;
-    }
-  }
-
-  return id;
-};
-
 // Ping
 app.get("/ping", (request, response) => {
   response.send("pong");
@@ -83,7 +41,7 @@ app.get("/ping", (request, response) => {
 
 // Quary info
 // 3.18*: Phonebook database step6-2
-app.get("/info", (request, response) => {
+app.get("/info", (request, response, next) => {
   Person.find({})
     .then((persons) => {
       const info = `<h3>Phonebook has info for ${
@@ -108,12 +66,6 @@ app.get("/api/persons", (request, response, next) => {
 // 3.14: Phonebook database, step2
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
-
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "missing person name or phone number!",
-    });
-  }
 
   const person = new Person({
     name: body.name,
@@ -157,11 +109,14 @@ app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
 
   const person = {
-    name: body.name,
     number: body.number,
   };
 
-  Person.findByIdAndUpdate(id, person, { new: true })
+  // 3.20*: Phonebook database, step8: Enable validators
+  Person.findByIdAndUpdate(id, person, {
+    new: true,
+    runValidators: true,
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
@@ -181,6 +136,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   } else {
     response.status(500).send("internal server error");
   }

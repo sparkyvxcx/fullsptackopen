@@ -66,17 +66,21 @@ const App = () => {
             }, 5000);
           })
           .catch((error) => {
+            // 3.20*: Phonebook database, step8-catch-update-error
+            const err = error.response.data.error;
             let message = [
-              `Information of ${newPerson.name} has already been removed from server`,
+              `fail to update new entry into phone book. Error: ${err}`,
               "error",
             ];
             setMessage(message);
             setTimeout(() => {
               setMessage([null]);
             }, 5000);
-            setPersons(
-              persons.filter((person) => person.name !== newPerson.name)
-            );
+            if (error.response.status !== 400) {
+              setPersons(
+                persons.filter((person) => person.name !== newPerson.name)
+              );
+            }
           });
       }
     } else {
@@ -94,8 +98,10 @@ const App = () => {
           }, 5000);
         })
         .catch((error) => {
+          // 3.20*: Phonebook database, step8-catch-create-error
+          const err = error.response.data.error;
           let message = [
-            `fail to add new entry into phone book. Error: ${error}`,
+            `fail to add new entry into phone book. Error: ${err}`,
             "warning",
           ];
           setMessage(message);
