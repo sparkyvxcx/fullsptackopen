@@ -4,8 +4,15 @@ part-2/phonebook-frontend/build
 
 # part-3
 
-part-3/heroku-backend/build
+part-3/demo-backend
+part-3/heroku-backend
+part-3/mongodb-practice
 part-3/phonebook-backend/build
+
+# part-4
+
+part-4/demo-backend
+part-4/bloglist-backend/build
 
 # environment file
 
