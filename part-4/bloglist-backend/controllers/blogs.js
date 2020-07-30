@@ -1,5 +1,4 @@
 const Blog = require("../models/blog");
-const { response } = require("express");
 const blogRouter = require("express").Router();
 
 // 4.8: Blog list tests, step1
