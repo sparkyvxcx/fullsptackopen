@@ -6,37 +6,43 @@ const Blog = require("../models/blog");
 // 4.17: bloglist expansion, step5
 // ad-hoc solution to displays the blogs created by each user
 userRouter.get("/", async (request, response) => {
-  const users = await User.find({});
-  const newUsers = [];
-
-  const promiseArray = users.map(async (user) => {
-    const newUser = user.toJSON();
-    // console.log(newUser);
-    const bids = user.blogs;
-    const blogs = [];
-    if (bids.length !== 0) {
-      const bidArray = bids.map(async (bid) => {
-        const blog = await Blog.findById(bid);
-        // console.log(blog);
-        blogs.push({
-          id: blog.id,
-          author: blog.author,
-          title: blog.title,
-          url: blog.url,
-        });
-        return bid;
-      });
-      await Promise.all(bidArray);
-    }
-    newUser.blogs = blogs;
-    console.log(newUser);
-    newUsers.push(newUser);
-    return user;
+  const users = await User.find({}).populate("blogs", {
+    title: 1,
+    url: 1,
+    author: 1,
   });
-  await Promise.all(promiseArray);
 
-  // response.json(users);
-  response.json(newUsers);
+  // const newUsers = [];
+
+  // const promiseArray = users.map(async (user) => {
+  //   const newUser = user.toJSON();
+  //   // console.log(newUser);
+  //   const bids = user.blogs;
+  //   const blogs = [];
+  //   if (bids.length !== 0) {
+  //     const bidArray = bids.map(async (bid) => {
+  //       const blog = await Blog.findById(bid);
+  //       // console.log(blog);
+  //       blogs.push({
+  //         id: blog.id,
+  //         author: blog.author,
+  //         title: blog.title,
+  //         url: blog.url,
+  //       });
+  //       return bid;
+  //     });
+  //     await Promise.all(bidArray);
+  //   }
+  //   newUser.blogs = blogs;
+  //   console.log(newUser);
+  //   newUsers.push(newUser);
+  //   return user;
+  // });
+  // await Promise.all(promiseArray);
+
+  // response.json(newUsers);
+
+  response.json(users);
 });
 
 userRouter.post("/", async (request, response) => {

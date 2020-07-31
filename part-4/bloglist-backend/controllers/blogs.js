@@ -1,7 +1,7 @@
+const blogRouter = require("express").Router();
+const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog");
 const User = require("../models/user");
-const { each } = require("lodash");
-const blogRouter = require("express").Router();
 
 // 4.8: Blog list tests, step1
 // 4.17: bloglist expansion, step5
@@ -11,32 +11,39 @@ blogRouter.get("/", async (request, response) => {
   //   response.json(blogs);
   // });
 
-  const blogs = await Blog.find({});
-  const newBlogs = [];
+  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
 
-  const promiseArray = blogs.map(async (blog) => {
-    const newBlog = blog.toJSON();
-    const uid = blog.user;
-    if (uid) {
-      const user = await User.findById(uid);
-      console.log(user.toJSON());
-      newBlog.user = user.toJSON();
-    }
-    newBlogs.push(newBlog);
-    return blog;
-  });
-  await Promise.all(promiseArray);
+  // const newBlogs = [];
 
-  response.json(newBlogs);
+  // const promiseArray = blogs.map(async (blog) => {
+  //   const newBlog = blog.toJSON();
+  //   const uid = blog.user;
+  //   if (uid) {
+  //     const user = await User.findById(uid);
+  //     console.log(user.toJSON());
+  //     newBlog.user = { username: user.username, name: user.name, id: user.id };
+  //   }
+  //   newBlogs.push(newBlog);
+  //   return blog;
+  // });
+  // await Promise.all(promiseArray);
+
+  // response.json(newBlogs);
+
+  response.json(blogs);
 });
 
 // 4.17: bloglist expansion, step5
 blogRouter.post("/", async (request, response) => {
   const body = request.body;
 
-  const users = await User.find({});
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
-  const user = users[0];
+  if (!decodedToken) {
+    return response.status(401).json({ error: "token missing or invalid" });
+  }
+
+  const user = await User.findById(decodedToken.id);
 
   const newBlog = {
     ...body,
