@@ -81,4 +81,5 @@ module.exports = {
   listWithOneBlog,
   listWithBiggerBlog,
   usersInDb,
+  blogsInDb,
 };

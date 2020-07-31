@@ -2,6 +2,7 @@ const blogRouter = require("express").Router();
 const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const blog = require("../models/blog");
 
 // 4.8: Blog list tests, step1
 // 4.17: bloglist expansion, step5
@@ -60,14 +61,34 @@ blogRouter.post("/", async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog);
   await user.save();
 
-  response.json(savedBlog);
+  response.status(201).json(savedBlog);
 });
 
 // 4.13 Blog list expansions, step1
+// 4.21*: bloglist expansion, step9
 blogRouter.delete("/:id", async (request, response) => {
   const id = request.params.id;
 
+  const targetBlog = await blog.findById(id);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  if (!decodedToken) {
+    return response.status(401).json({ error: "token missing or invalid" });
+  }
+
+  const uid = decodedToken.id.toString();
+
+  if (uid !== targetBlog.user.toString()) {
+    return response.status(401).json({ error: "operation not permitted" });
+  }
+
   const result = await Blog.findByIdAndRemove(id);
+  const user = await User.findById(uid);
+  user.blogs = user.blogs.filter((blog) => {
+    console.log("compare:", blog.toString(), id);
+    return blog.toString() !== id;
+  });
+  await user.save();
 
   response.status(204).json({ "deleted ntoe": result });
 });

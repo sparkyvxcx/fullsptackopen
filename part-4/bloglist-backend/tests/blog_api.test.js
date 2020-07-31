@@ -9,6 +9,8 @@ const Blog = require("../models/blog");
 jest.setTimeout(100000);
 
 const initialData = helper.listWithBiggerBlog;
+const TEST_TOKEN =
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVsbGlvdCIsImlkIjoiNWYyM2Q3YmQyN2JkMmI2NGEzYTZmN2E3IiwiaWF0IjoxNTk2MTg0NTIwfQ.11KbVJVwBnxQIy-fqgv7u0V43s3b9IwbJFeZbc723yE";
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -51,6 +53,7 @@ describe("manipulate blog data", () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", TEST_TOKEN)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -65,26 +68,75 @@ describe("manipulate blog data", () => {
     expect(titles).toContain("Clear explanation of Rust’s module system");
   });
 
+  test("a valid blog cannot be added without TEST_TOKEN", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const newBlog = {
+      title: "Clear explanation of Rust’s module system",
+      author: "Sheshbabu Chinnakonda",
+      url: "http://www.sheshbabu.com/posts/rust-module-system/",
+      likes: 45,
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(401)
+      .expect("Content-Type", /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
+  });
+
   // 4.13 Blog list expansions, step1
   test("a valid blog can be deleted", async () => {
-    let response = await api.get("/api/blogs");
-    const testBlogs = response.body;
+    // let response = await api.get("/api/blogs");
+    // const testBlogs = response.body;
 
-    const targetBlog = testBlogs[0];
+    // const targetBlog = testBlogs[0];
+    const blogsAtStart = await helper.blogsInDb();
 
-    await api.delete(`/api/blogs/${targetBlog.id}`).expect(204);
+    const newBlog = {
+      title: "Clear explanation of Rust’s module system",
+      author: "Sheshbabu Chinnakonda",
+      url: "http://www.sheshbabu.com/posts/rust-module-system/",
+      likes: 4537,
+    };
 
-    response = await api.get("/api/blogs");
+    const response = await api
+      .post("/api/blogs")
+      .set("Authorization", TEST_TOKEN)
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-    expect(response.body).toHaveLength(testBlogs.length - 1);
+    const targetBlog = response.body;
+
+    await api
+      .delete(`/api/blogs/${targetBlog.id}`)
+      .set("Authorization", TEST_TOKEN)
+      .expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
   });
 
   // 4.14 Blog list expansions, step2
   test("a valid blog can be updated", async () => {
-    let response = await api.get("/api/blogs");
-    const testBlogs = response.body;
+    const newBlog = {
+      title: "Things I Don't Know as of 2018",
+      author: "Dan Abramov",
+      url: "https://overreacted.io/things-i-dont-know-as-of-2018/",
+      likes: 0,
+    };
 
-    const targetBlog = testBlogs[0];
+    let response = await api
+      .post("/api/blogs")
+      .set("Authorization", TEST_TOKEN)
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const targetBlog = response.body;
 
     targetBlog.author = "John Snow";
     targetBlog.likes = 7;
@@ -92,6 +144,7 @@ describe("manipulate blog data", () => {
 
     response = await api
       .put(`/api/blogs/${targetBlog.id}`)
+      .set("Authorization", TEST_TOKEN)
       .send(targetBlog)
       .expect(200)
       .expect("Content-Type", /application\/json/);
@@ -114,6 +167,7 @@ describe("missing property of a blog check", () => {
 
     const response = await api
       .post("/api/blogs")
+      .set("Authorization", TEST_TOKEN)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -129,7 +183,11 @@ describe("missing property of a blog check", () => {
       author: "Sheshbabu Chinnakonda",
     };
 
-    await api.post("/api/blogs").send(newBlog).expect(400);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", TEST_TOKEN)
+      .send(newBlog)
+      .expect(400);
   });
 });
 
