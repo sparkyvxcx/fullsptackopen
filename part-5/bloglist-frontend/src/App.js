@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import "./App.css";
 
 const NoteForm = ({
   blog,
@@ -42,6 +44,7 @@ const NoteForm = ({
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [errorMessage, setErrorMessage] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -81,8 +84,18 @@ const App = () => {
       setUrl("");
       const returnedBlog = await blogService.create(blogObject);
       setBlogs(blogs.concat(returnedBlog));
+      const content = `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`;
+      setErrorMessage([content, "notify"]);
+      setTimeout(() => {
+        setErrorMessage([]);
+      }, 8000);
     } catch (exception) {
       console.log("failed to create a new blog", exception);
+      const content = "Network error: failed to create a new blog";
+      setErrorMessage([content, "notify"]);
+      setTimeout(() => {
+        setErrorMessage([]);
+      }, 8000);
     }
   };
 
@@ -94,11 +107,18 @@ const App = () => {
       const user = await loginService.login({ username, password });
 
       window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
+      blogService.setToken(user.token);
       setUser(user);
       setUsername("");
       setPassword("");
+      setErrorMessage([]);
     } catch (exception) {
       console.log("Wrong credentials");
+      const content = "wrong username or password";
+      setErrorMessage([content, "error"]);
+      setTimeout(() => {
+        setErrorMessage([]);
+      }, 8000);
     }
   };
 
@@ -111,6 +131,7 @@ const App = () => {
   const loginForm = () => (
     <div>
       <h1>log in to application</h1>
+      <Notification message={errorMessage} />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -138,6 +159,7 @@ const App = () => {
   const blogPage = () => (
     <div>
       <h2>blogs</h2>
+      <Notification message={errorMessage} />
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
