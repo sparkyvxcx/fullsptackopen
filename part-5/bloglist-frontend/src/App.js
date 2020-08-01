@@ -3,23 +3,88 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
+const NoteForm = ({
+  blog,
+  createBlog,
+  onTitleChange,
+  onAuthorChange,
+  onUrlChange,
+}) => (
+  <div>
+    <h3>create new</h3>
+    <form onSubmit={createBlog}>
+      <div>
+        title:
+        <input
+          type="text"
+          name="title"
+          value={blog.title}
+          onChange={onTitleChange}
+        />
+      </div>
+      <div>
+        author:
+        <input
+          type="text"
+          name="autho"
+          value={blog.author}
+          onChange={onAuthorChange}
+        />
+      </div>
+      <div>
+        url:
+        <input type="text" name="url" value={blog.url} onChange={onUrlChange} />
+      </div>
+      <button type="submit">create</button>
+    </form>
+  </div>
+);
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+
+  // load credentials from local storage
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
+  // fetch all bloglists from remote database
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
+
+  const onChangeFactory = (setter) => (event) => setter(event.target.value);
+
+  const createBlog = async (event) => {
+    event.preventDefault();
+    const blogObject = {
+      title,
+      author,
+      url,
+    };
+    // console.log("create a new Blog with", { title, author, url });
+    try {
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+      const returnedBlog = await blogService.create(blogObject);
+      setBlogs(blogs.concat(returnedBlog));
+    } catch (exception) {
+      console.log("failed to create a new blog", exception);
+    }
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -76,6 +141,13 @@ const App = () => {
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
+      <NoteForm
+        blog={{ title, author, url }}
+        createBlog={createBlog}
+        onTitleChange={onChangeFactory(setTitle)}
+        onAuthorChange={onChangeFactory(setAuthor)}
+        onUrlChange={onChangeFactory(setUrl)}
+      />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
