@@ -14,6 +14,10 @@ part-3/phonebook-backend/build
 part-4/notes-backend
 part-4/bloglist-backend/build
 
+# part-5
+
+part-5/notes-frontend
+
 # environment file
 
 */.env
