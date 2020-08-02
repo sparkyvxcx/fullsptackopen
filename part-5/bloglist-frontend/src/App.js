@@ -4,6 +4,7 @@ import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./App.css";
+import Togglable from "./components/Togglable";
 
 const NoteForm = ({
   blog,
@@ -163,13 +164,15 @@ const App = () => {
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
-      <NoteForm
-        blog={{ title, author, url }}
-        createBlog={createBlog}
-        onTitleChange={onChangeFactory(setTitle)}
-        onAuthorChange={onChangeFactory(setAuthor)}
-        onUrlChange={onChangeFactory(setUrl)}
-      />
+      <Togglable buttonLabel="new note">
+        <NoteForm
+          blog={{ title, author, url }}
+          createBlog={createBlog}
+          onTitleChange={onChangeFactory(setTitle)}
+          onAuthorChange={onChangeFactory(setAuthor)}
+          onUrlChange={onChangeFactory(setUrl)}
+        />
+      </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
