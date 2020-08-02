@@ -1,47 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
+import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./App.css";
 import Togglable from "./components/Togglable";
 
-const NoteForm = ({
-  blog,
-  createBlog,
-  onTitleChange,
-  onAuthorChange,
-  onUrlChange,
-}) => (
-  <div>
-    <h3>create new</h3>
-    <form onSubmit={createBlog}>
-      <div>
-        title:
-        <input
-          type="text"
-          name="title"
-          value={blog.title}
-          onChange={onTitleChange}
-        />
-      </div>
-      <div>
-        author:
-        <input
-          type="text"
-          name="autho"
-          value={blog.author}
-          onChange={onAuthorChange}
-        />
-      </div>
-      <div>
-        url:
-        <input type="text" name="url" value={blog.url} onChange={onUrlChange} />
-      </div>
-      <button type="submit">create</button>
-    </form>
-  </div>
-);
+// const NoteForm = ({
+//   blog,
+//   createBlog,
+//   onTitleChange,
+//   onAuthorChange,
+//   onUrlChange,
+// }) => (
+//   <div>
+//     <h3>create new</h3>
+//     <form onSubmit={createBlog}>
+//       <div>
+//         title:
+//         <input
+//           type="text"
+//           name="title"
+//           value={blog.title}
+//           onChange={onTitleChange}
+//         />
+//       </div>
+//       <div>
+//         author:
+//         <input
+//           type="text"
+//           name="autho"
+//           value={blog.author}
+//           onChange={onAuthorChange}
+//         />
+//       </div>
+//       <div>
+//         url:
+//         <input type="text" name="url" value={blog.url} onChange={onUrlChange} />
+//       </div>
+//       <button type="submit">create</button>
+//     </form>
+//   </div>
+// );
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -49,10 +50,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
 
   // load credentials from local storage
   useEffect(() => {
@@ -71,18 +68,9 @@ const App = () => {
 
   const onChangeFactory = (setter) => (event) => setter(event.target.value);
 
-  const createBlog = async (event) => {
-    event.preventDefault();
-    const blogObject = {
-      title,
-      author,
-      url,
-    };
-    // console.log("create a new Blog with", { title, author, url });
+  const createBlog = async (blogObject) => {
     try {
-      setTitle("");
-      setAuthor("");
-      setUrl("");
+      blogFormRef.current.toggleVisibility();
       const returnedBlog = await blogService.create(blogObject);
       setBlogs(blogs.concat(returnedBlog));
       const content = `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`;
@@ -93,7 +81,7 @@ const App = () => {
     } catch (exception) {
       console.log("failed to create a new blog", exception);
       const content = "Network error: failed to create a new blog";
-      setErrorMessage([content, "notify"]);
+      setErrorMessage([content, "error"]);
       setTimeout(() => {
         setErrorMessage([]);
       }, 8000);
@@ -128,6 +116,8 @@ const App = () => {
     window.localStorage.removeItem("loggedBloglistUser");
     setUser(null);
   };
+
+  const blogFormRef = useRef();
 
   const loginForm = () => (
     <div>
@@ -164,14 +154,8 @@ const App = () => {
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
-      <Togglable buttonLabel="new note">
-        <NoteForm
-          blog={{ title, author, url }}
-          createBlog={createBlog}
-          onTitleChange={onChangeFactory(setTitle)}
-          onAuthorChange={onChangeFactory(setAuthor)}
-          onUrlChange={onChangeFactory(setUrl)}
-        />
+      <Togglable buttonLabel="new note" ref={blogFormRef}>
+        <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
