@@ -72,6 +72,7 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility();
       const returnedBlog = await blogService.create(blogObject);
+      console.log(returnedBlog);
       setBlogs(blogs.concat(returnedBlog));
       const content = `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`;
       setErrorMessage([content, "notify"]);
@@ -100,6 +101,20 @@ const App = () => {
     } catch (exception) {
       console.log("failed to create a new blog", exception);
       const content = "Network error: failed to update this blog";
+      setErrorMessage([content, "error"]);
+      setTimeout(() => {
+        setErrorMessage([]);
+      }, 5000);
+    }
+  };
+
+  const removeBlog = async (blogId) => {
+    try {
+      setBlogs(blogs.filter((blog) => blog.id !== blogId));
+      await blogService.remove(blogId);
+    } catch (exception) {
+      console.log("failed to remove this blog", exception);
+      const content = "Network error: failed to remove this blog";
       setErrorMessage([content, "error"]);
       setTimeout(() => {
         setErrorMessage([]);
@@ -179,7 +194,13 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {sortedBlogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          uid={user.id}
+          updateBlog={updateBlog}
+          removeBlog={removeBlog}
+        />
       ))}
     </div>
   );

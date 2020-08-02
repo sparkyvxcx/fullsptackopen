@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-const Blog = ({ blog, updateBlog }) => {
+
+const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,6 +11,12 @@ const Blog = ({ blog, updateBlog }) => {
   const [show, setShow] = useState(false);
 
   const showDetail = { display: show ? "" : "none" };
+  let showRemove = { display: "none" };
+
+  if (blog.user) {
+    const buid = blog.user.id || blog.user;
+    showRemove = { display: buid === uid ? "" : "none" };
+  }
 
   const onClickHanlde = () => {
     setShow(!show);
@@ -18,6 +25,14 @@ const Blog = ({ blog, updateBlog }) => {
   const onLikeHanlde = () => {
     blog.likes++;
     updateBlog(blog);
+  };
+
+  const onRemoveHandle = () => {
+    const message = `Remove blog ${blog.title} by ${blog.author}?`;
+    const result = window.confirm(message);
+    if (result) {
+      removeBlog(blog.id);
+    }
   };
 
   return (
@@ -33,6 +48,9 @@ const Blog = ({ blog, updateBlog }) => {
           <button onClick={onLikeHanlde}>like</button>
         </div>
         <div>{blog.author}</div>
+        <button style={showRemove} onClick={onRemoveHandle}>
+          remove
+        </button>
       </div>
     </div>
   );
