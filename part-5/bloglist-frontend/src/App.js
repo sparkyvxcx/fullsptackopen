@@ -88,6 +88,25 @@ const App = () => {
     }
   };
 
+  const updateBlog = async (blogObject) => {
+    try {
+      setBlogs(
+        blogs.map((blog) => (blog.id === blogObject.id ? blogObject : blog))
+      );
+      const returnedBlog = await blogService.update(blogObject);
+      // setBlogs(
+      //   blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
+      // );
+    } catch (exception) {
+      console.log("failed to create a new blog", exception);
+      const content = "Network error: failed to update this blog";
+      setErrorMessage([content, "error"]);
+      setTimeout(() => {
+        setErrorMessage([]);
+      }, 5000);
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
     console.log("Logging in with", username, password);
@@ -158,7 +177,7 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
       ))}
     </div>
   );

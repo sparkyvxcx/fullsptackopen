@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-const Blog = ({ blog }) => {
+import React, { useState } from "react";
+const Blog = ({ blog, updateBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -15,6 +15,11 @@ const Blog = ({ blog }) => {
     setShow(!show);
   };
 
+  const onLikeHanlde = () => {
+    blog.likes++;
+    updateBlog(blog);
+  };
+
   return (
     <div style={blogStyle}>
       <div>
@@ -25,7 +30,7 @@ const Blog = ({ blog }) => {
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}
-          <button>like</button>
+          <button onClick={onLikeHanlde}>like</button>
         </div>
         <div>{blog.author}</div>
       </div>
