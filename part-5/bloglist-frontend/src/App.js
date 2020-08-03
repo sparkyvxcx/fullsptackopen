@@ -7,43 +7,6 @@ import loginService from "./services/login";
 import "./App.css";
 import Togglable from "./components/Togglable";
 
-// const NoteForm = ({
-//   blog,
-//   createBlog,
-//   onTitleChange,
-//   onAuthorChange,
-//   onUrlChange,
-// }) => (
-//   <div>
-//     <h3>create new</h3>
-//     <form onSubmit={createBlog}>
-//       <div>
-//         title:
-//         <input
-//           type="text"
-//           name="title"
-//           value={blog.title}
-//           onChange={onTitleChange}
-//         />
-//       </div>
-//       <div>
-//         author:
-//         <input
-//           type="text"
-//           name="autho"
-//           value={blog.author}
-//           onChange={onAuthorChange}
-//         />
-//       </div>
-//       <div>
-//         url:
-//         <input type="text" name="url" value={blog.url} onChange={onUrlChange} />
-//       </div>
-//       <button type="submit">create</button>
-//     </form>
-//   </div>
-// );
-
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState([]);
@@ -65,8 +28,6 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
-
-  const onChangeFactory = (setter) => (event) => setter(event.target.value);
 
   const createBlog = async (blogObject) => {
     try {
@@ -94,7 +55,7 @@ const App = () => {
       setBlogs(
         blogs.map((blog) => (blog.id === blogObject.id ? blogObject : blog))
       );
-      const returnedBlog = await blogService.update(blogObject);
+      await blogService.update(blogObject);
       // setBlogs(
       //   blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
       // );
