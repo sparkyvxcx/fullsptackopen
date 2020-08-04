@@ -37,17 +37,17 @@ const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
-        {blog.title}
+      <div className="blogTitleAuthor">
+        {blog.title} {blog.author}
         <button onClick={onClickHanlde}>{show ? "hide" : "view"}</button>
       </div>
-      <div style={showDetail}>
+      <div style={showDetail} className="detailContent">
         <div>{blog.url}</div>
         <div>
           likes {blog.likes}
           <button onClick={onLikeHanlde}>like</button>
         </div>
-        <div>{blog.author}</div>
+        <div className="blogAuthor">{blog.author}</div>
         <button style={showRemove} onClick={onRemoveHandle}>
           remove
         </button>
