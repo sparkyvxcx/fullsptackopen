@@ -4,20 +4,40 @@ import { render, fireEvent } from "@testing-library/react";
 import { prettyDOM } from "@testing-library/dom";
 import Blog from "./Blog";
 
-test("renders title && author, while hide detail", () => {
+describe("<Blog />", () => {
   const blog = {
     title: "Blog title render test",
     author: "Tester",
+    url: "https://www.google.com",
+    likes: 0,
   };
 
-  const component = render(<Blog blog={blog} />);
+  let component;
 
-  const div = component.container.querySelector(".blogTitleAuthor");
+  beforeEach(() => {
+    component = render(<Blog blog={blog} />);
+  });
 
-  // component.debug();
+  test("renders title && author, while hide detail", () => {
+    const div = component.container.querySelector(".blogTitleAuthor");
 
-  expect(div).toHaveTextContent(`${blog.title} ${blog.author}`);
+    // component.debug();
 
-  const detail = component.container.querySelector(".detailContent");
-  expect(detail).toHaveStyle("display: none");
+    expect(div).toHaveTextContent(`${blog.title} ${blog.author}`);
+
+    const detail = component.container.querySelector(".detailContent");
+    expect(detail).toHaveStyle("display: none");
+  });
+
+  test("url and number of likes are shown when the shown details button has been clicked", () => {
+    const button = component.getByText("view");
+    fireEvent.click(button);
+
+    const detail = component.container.querySelector(".detailContent");
+    expect(detail).toBeDefined();
+    expect(detail).not.toHaveStyle("display: none");
+
+    expect(detail).toHaveTextContent("https://www.google.com");
+    expect(detail).toHaveTextContent("likes 0");
+  });
 });
