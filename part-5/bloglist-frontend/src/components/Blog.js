@@ -36,7 +36,7 @@ const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div id="blog-item" style={blogStyle}>
       <div className="blogTitleAuthor">
         {blog.title} {blog.author}
         <button onClick={onClickHanlde}>{show ? "hide" : "view"}</button>

@@ -47,4 +47,29 @@ describe("Blog app", function () {
       cy.get("html").should("not.contain", "Elliot Alderson logged in");
     });
   });
+
+  describe.only("When logged in", function () {
+    beforeEach(function () {
+      // user log in
+      cy.contains("login").click();
+      cy.get("#username").type("elliot");
+      cy.get("#password").type("fsocity");
+      cy.get("#login-button").click();
+    });
+
+    it("A blog can be created", function () {
+      // toggle blog form
+      cy.contains("Create new blog").click();
+
+      cy.get("#title").type("A new blog post about 5-9 attack");
+      cy.get("#author").type("MR. ROBOT");
+      cy.get("#url").type("https://www.fsocity.com");
+      cy.get("#create-blog").click();
+
+      cy.get("#blog-item").should(
+        "contain",
+        "A new blog post about 5-9 attack MR. ROBOT"
+      );
+    });
+  });
 });
