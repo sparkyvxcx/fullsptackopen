@@ -82,6 +82,14 @@ describe("Blog app", function () {
         cy.get("#author").type("MR. ROBOT");
         cy.get("#url").type("https://www.fsocity.com");
         cy.get("#create-blog").click();
+
+        const user = {
+          name: "Minister Zhange",
+          username: "whiterose",
+          password: "darkarmy",
+        };
+        // create a new test user
+        cy.request("POST", "http://localhost:3001/api/users/", user);
       });
 
       it("User can like a blog", function () {
@@ -89,6 +97,34 @@ describe("Blog app", function () {
         cy.get("@theBlog").contains("view").click();
         cy.get("@theBlog").get(".likeButton").click();
         cy.get("@theBlog").contains("likes 1");
+      });
+
+      it("User can delete a blog created by himself/herself", function () {
+        cy.get("#blog-item").as("theBlog");
+        cy.get("@theBlog").contains("view").click();
+        cy.get("@theBlog").contains("remove").click();
+
+        cy.get("html").should(
+          "not.contain",
+          "A new blog post about 5-9 attack MR. ROBOT"
+        );
+      });
+
+      it("A user cannot delete a blog that is not created by himself/herself", function () {
+        // log out
+        cy.contains("log out").click();
+
+        // log in
+        cy.contains("login").click();
+        cy.get("#username").type("whiterose");
+        cy.get("#password").type("darkarmy");
+        cy.get("#login-button").click();
+
+        cy.get("#blog-item").as("theBlog");
+        cy.get("@theBlog").contains("view").click();
+        cy.get("@theBlog")
+          .contains("remove")
+          .should("have.css", "display", "none");
       });
     });
   });
