@@ -30,3 +30,7 @@ My full stack open 2020 submissions
 ## [Part-4](part-4)
 
 - [x] [bloglist-backend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-4/bloglist-backend
+
+## [Part-5](part-5)
+
+- [x] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-5/bloglist-frontend
