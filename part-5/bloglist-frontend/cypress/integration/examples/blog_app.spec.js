@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+const { func } = require("prop-types");
+
 describe("Blog app", function () {
   beforeEach(function () {
     // clear database
@@ -70,6 +73,23 @@ describe("Blog app", function () {
         "contain",
         "A new blog post about 5-9 attack MR. ROBOT"
       );
+    });
+
+    describe("when a blog exists", function () {
+      beforeEach(function () {
+        cy.contains("Create new blog").click();
+        cy.get("#title").type("A new blog post about 5-9 attack");
+        cy.get("#author").type("MR. ROBOT");
+        cy.get("#url").type("https://www.fsocity.com");
+        cy.get("#create-blog").click();
+      });
+
+      it("User can like a blog", function () {
+        cy.get("#blog-item").as("theBlog");
+        cy.get("@theBlog").contains("view").click();
+        cy.get("@theBlog").get(".likeButton").click();
+        cy.get("@theBlog").contains("likes 1");
+      });
     });
   });
 });
