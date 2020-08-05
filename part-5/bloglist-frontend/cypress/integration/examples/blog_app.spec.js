@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-const { func } = require("prop-types");
-
 describe("Blog app", function () {
   beforeEach(function () {
     // clear database
@@ -54,20 +52,29 @@ describe("Blog app", function () {
   describe.only("When logged in", function () {
     beforeEach(function () {
       // user log in
-      cy.contains("login").click();
-      cy.get("#username").type("elliot");
-      cy.get("#password").type("fsocity");
-      cy.get("#login-button").click();
+      // cy.contains("login").click();
+      // cy.get("#username").type("elliot");
+      // cy.get("#password").type("fsocity");
+      // cy.get("#login-button").click();
+
+      cy.login({ username: "elliot", password: "fsocity" });
     });
 
     it("A blog can be created", function () {
       // toggle blog form
-      cy.contains("Create new blog").click();
+      // cy.contains("Create new blog").click();
 
-      cy.get("#title").type("A new blog post about 5-9 attack");
-      cy.get("#author").type("MR. ROBOT");
-      cy.get("#url").type("https://www.fsocity.com");
-      cy.get("#create-blog").click();
+      // cy.get("#title").type("A new blog post about 5-9 attack");
+      // cy.get("#author").type("MR. ROBOT");
+      // cy.get("#url").type("https://www.fsocity.com");
+      // cy.get("#create-blog").click();
+
+      cy.createBlog({
+        title: "A new blog post about 5-9 attack",
+        author: "MR. ROBOT",
+        url: "https://www.fsocity.com",
+        likes: 0,
+      });
 
       cy.get("#blog-item").should(
         "contain",
@@ -77,11 +84,18 @@ describe("Blog app", function () {
 
     describe("when a blog exists", function () {
       beforeEach(function () {
-        cy.contains("Create new blog").click();
-        cy.get("#title").type("A new blog post about 5-9 attack");
-        cy.get("#author").type("MR. ROBOT");
-        cy.get("#url").type("https://www.fsocity.com");
-        cy.get("#create-blog").click();
+        // cy.contains("Create new blog").click();
+        // cy.get("#title").type("A new blog post about 5-9 attack");
+        // cy.get("#author").type("MR. ROBOT");
+        // cy.get("#url").type("https://www.fsocity.com");
+        // cy.get("#create-blog").click();
+
+        cy.createBlog({
+          title: "A new blog post about 5-9 attack",
+          author: "MR. ROBOT",
+          url: "https://www.fsocity.com",
+          likes: 0,
+        });
 
         const user = {
           name: "Minister Zhange",
@@ -115,16 +129,59 @@ describe("Blog app", function () {
         cy.contains("log out").click();
 
         // log in
-        cy.contains("login").click();
-        cy.get("#username").type("whiterose");
-        cy.get("#password").type("darkarmy");
-        cy.get("#login-button").click();
+        // cy.contains("login").click();
+        // cy.get("#username").type("whiterose");
+        // cy.get("#password").type("darkarmy");
+        // cy.get("#login-button").click();
+        cy.login({ username: "whiterose", password: "darkarmy" });
 
         cy.get("#blog-item").as("theBlog");
         cy.get("@theBlog").contains("view").click();
         cy.get("@theBlog")
           .contains("remove")
           .should("have.css", "display", "none");
+      });
+    });
+
+    describe("when multiple blog exists", function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: "first blog",
+          author: "john",
+          url: "test",
+          likes: 10,
+        });
+        cy.createBlog({
+          title: "second blog",
+          author: "john",
+          url: "test",
+          likes: 20,
+        });
+        cy.createBlog({
+          title: "third blog",
+          author: "john",
+          url: "test",
+          likes: 30,
+        });
+      });
+
+      it("blogs are ordered according to likes", function () {
+        cy.get("[class=likes]").should("have.length", 3).as("bloglist");
+        // cy.get("@bloglist")
+        //   .should("have.length", 3)
+        //   .each(($blog, index) => {
+        //     cy.wrap($blog).should("contain", "likes");
+        //   });
+        cy.get("@bloglist")
+          .should("have.length", 3)
+          .then(($bloglist) => {
+            console.log($bloglist[0].innerText);
+            console.log($bloglist[1].innerText);
+            console.log($bloglist[2].innerText);
+            expect($bloglist[0].innerText).to.contain("likes 30like");
+            expect($bloglist[1].innerText).to.contain("likes 20like");
+            expect($bloglist[2].innerText).to.contain("likes 10like");
+          });
       });
     });
   });
