@@ -15,8 +15,8 @@ const Anecdote = ({ anecdote, handleVote }) => {
 };
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) =>
-    state.sort((a, b) => (a.votes > b.votes ? -1 : 1))
+  const anecdotes = useSelector(({ anecdotes }) =>
+    anecdotes.sort((a, b) => (a.votes > b.votes ? -1 : 1))
   );
   const dispatch = useDispatch();
 
