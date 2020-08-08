@@ -19,10 +19,14 @@ const Anecdote = ({ anecdote, handleVote }) => {
 };
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(({ anecdotes }) =>
+  const searchTerm = useSelector((state) => state.term);
+  let anecdotes = useSelector(({ anecdotes }) =>
     anecdotes.sort((a, b) => (a.votes > b.votes ? -1 : 1))
   );
   const dispatch = useDispatch();
+  anecdotes = anecdotes.filter((anecdote) => {
+    return anecdote.content.search(searchTerm) >= 0;
+  });
 
   const vote = (id, content) => {
     console.log("vote", id);

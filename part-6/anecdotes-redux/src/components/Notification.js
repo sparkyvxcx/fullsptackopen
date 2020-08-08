@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { notificationGenerate } from "../reducers/notificationReducer";
 
 const Notification = () => {
   const style = {
