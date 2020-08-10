@@ -7,4 +7,10 @@ const fetchAll = async () => {
   return response.data;
 };
 
-export default { fetchAll };
+const createOne = async (content) => {
+  const anecdote = { content, votes: 0 };
+  const response = await axios.post(baseUrl, anecdote);
+  return response.data;
+};
+
+export default { fetchAll, createOne };
