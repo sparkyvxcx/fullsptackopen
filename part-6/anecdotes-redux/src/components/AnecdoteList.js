@@ -28,10 +28,10 @@ const AnecdoteList = () => {
     return anecdote.content.search(searchTerm) >= 0;
   });
 
-  const vote = (id, content) => {
-    console.log("vote", id);
-    dispatch(generateVote(id));
-    dispatch(voteNotification(content));
+  const vote = (anecdote) => {
+    console.log("vote", anecdote.id);
+    dispatch(generateVote(anecdote));
+    dispatch(voteNotification(anecdote.content));
     setTimeout(() => {
       dispatch(clearNotification());
     }, 5000);
@@ -43,7 +43,7 @@ const AnecdoteList = () => {
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
-          handleVote={() => vote(anecdote.id, anecdote.content)}
+          handleVote={() => vote(anecdote)}
         />
       ))}
     </div>
