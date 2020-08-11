@@ -10,7 +10,9 @@ const Notification = () => {
 
   const notification = useSelector((state) => state.message);
 
-  return <div style={style}>{notification}</div>;
+  console.log("-----------------------------", notification);
+
+  return <div style={style}>{notification[0]}</div>;
 };
 
 export default Notification;

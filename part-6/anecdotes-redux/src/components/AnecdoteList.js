@@ -45,7 +45,9 @@ const AnecdoteList = (props) => {
     console.log("vote", anecdote.id);
     dispatch(generateVote(anecdote));
     // dispatch(voteNotification(anecdote.content));
-    dispatch(voteNotification(`you voted '${anecdote.content}'`, 10));
+    dispatch(
+      voteNotification(`you voted '${anecdote.content}'`, 5, props.message[1])
+    );
   };
 
   return (
@@ -66,6 +68,7 @@ const mapStateToProps = (state) => {
   return {
     anecdotes: state.anecdotes,
     term: state.term,
+    message: state.message,
   };
 };
 
