@@ -1,14 +1,17 @@
 import React from "react";
 import { filterChange } from "../reducers/filterReducer";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
+import { connect } from "react-redux";
 
-const Filter = () => {
-  const dispatch = useDispatch();
-  const searchTerm = useSelector((state) => state.term);
+const Filter = (props) => {
+  // const dispatch = useDispatch();
+  // const searchTerm = useSelector((state) => state.term);
+  const searchTerm = props.term;
 
   const handleChange = (event) => {
     // input-field value is in variable event.target.value
-    dispatch(filterChange(event.target.value));
+    // dispatch(filterChange(event.target.value));
+    props.filterChange(event.target.value);
   };
   const style = {
     marginBottom: 10,
@@ -21,4 +24,12 @@ const Filter = () => {
   );
 };
 
-export default Filter;
+const mapStateToProps = (state) => {
+  return {
+    term: state.term,
+  };
+};
+
+const ConnectFilter = connect(mapStateToProps, { filterChange })(Filter);
+
+export default ConnectFilter;
