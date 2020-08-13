@@ -34,3 +34,9 @@ My full stack open 2020 submissions
 ## [Part-5](part-5)
 
 - [x] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-5/bloglist-frontend
+
+
+## [Part-6](part-6)
+
+- [x] [unicafe-redux]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-6/unicafe-redux
+- [x] [anecdotes-redux]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-6/anecdotes-redux
