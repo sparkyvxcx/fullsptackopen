@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
+import { Switch, Route, Link, useRouteMatch, Redirect } from "react-router-dom";
 
 const Menu = () => {
   const padding = {
@@ -18,6 +18,10 @@ const Menu = () => {
       </Link>
     </div>
   );
+};
+
+const Notification = ({ notify }) => {
+  return notify === "" ? null : <div>{notify}</div>;
 };
 
 const AnecdoteList = ({ anecdotes }) => (
@@ -150,10 +154,19 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  const [create, setCreate] = useState(false);
 
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0);
     setAnecdotes(anecdotes.concat(anecdote));
+    setCreate(true);
+    setTimeout(() => {
+      setCreate(false);
+    }, 1000);
+    setNotification(`a new anecdote ${anecdote.content} created!`);
+    setTimeout(() => {
+      setNotification("");
+    }, 10000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -182,12 +195,13 @@ const App = () => {
       <h1>Software anecdotes</h1>
 
       <Menu />
+      <Notification notify={notification} />
       <Switch>
         <Route path="/anecdotes/:id">
           <Anecdote anecdote={anecdoteToShow} />
         </Route>
         <Route path="/create">
-          <CreateNew addNew={addNew} />
+          {create ? <Redirect to="/" /> : <CreateNew addNew={addNew} />}
         </Route>
         <Route path="/about">
           <About />
