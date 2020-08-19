@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
 import "./App.css";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,46 +16,38 @@ import {
   createNotification,
   clearNotification,
 } from "./reducers/notificationReducer";
+import { userLogin, userLogout, userInit } from "./reducers/loginReducer";
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blog);
-
-  console.log("Fetch data:", blogs);
+  const user = useSelector((state) => state.signeduser);
 
   // load credentials from local storage
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const localUser = JSON.parse(loggedUserJSON);
+      dispatch(userInit(localUser));
     }
-  }, []);
+  }, [dispatch]);
 
   // fetch all bloglists from remote database
   useEffect(() => {
-    // blogService.getAll().then((blogs) => setBlogs(blogs));
-    dispatch(initializeBlogs());
-  }, [dispatch]);
+    console.log("user:", user);
+    if (user !== null) {
+      dispatch(initializeBlogs());
+    }
+  }, [dispatch, user]);
 
   const createBlogTest = (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility();
-      // const returnedBlog = await blogService.create(blogObject);
-      // console.log(returnedBlog);
-      const returnedBlog = { title: "test", author: "test" };
-      // setBlogs(blogs.concat(returnedBlog));
       dispatch(createBlog(blogObject));
-
       const content = `a new blog ${blogObject.title} by ${blogObject.author} added`;
-      // setErrorMessage([content, "notify"]);
 
       setTimeout(() => {
         dispatch(clearNotification());
@@ -66,7 +56,6 @@ const App = () => {
     } catch (exception) {
       console.log("failed to create a new blog", exception);
       const content = "Network error: failed to create a new blog";
-      // setErrorMessage([content, "error"]);
 
       setTimeout(() => {
         dispatch(clearNotification());
@@ -77,15 +66,7 @@ const App = () => {
 
   const updateBlogTest = (blogObject) => {
     try {
-      // setBlogs(
-      // blogs.map((blog) => (blog.id === blogObject.id ? blogObject : blog));
-      // );
-      // await blogService.update(blogObject);
       dispatch(updateBlog(blogObject));
-
-      // setBlogs(
-      //   blogs.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
-      // );
 
       const content = `like a blog post ${blogObject.title} by ${blogObject.author}`;
       setTimeout(() => {
@@ -95,7 +76,6 @@ const App = () => {
     } catch (exception) {
       console.log("failed to create a new blog", exception);
       const content = "Network error: failed to update this blog";
-      // setErrorMessage([content, "error"]);
 
       setTimeout(() => {
         dispatch(clearNotification());
@@ -106,8 +86,6 @@ const App = () => {
 
   const removeBlogTest = (blogId) => {
     try {
-      // setBlogs(blogs.filter((blog) => blog.id !== blogId));
-      // await blogService.remove(blogId);
       dispatch(removeBlog(blogId));
       const content = `delete a blog post`;
       setTimeout(() => {
@@ -117,7 +95,6 @@ const App = () => {
     } catch (exception) {
       console.log("failed to remove this blog", exception);
       const content = "Network error: failed to remove this blog";
-      // setErrorMessage([content, "error"]);
 
       setTimeout(() => {
         dispatch(clearNotification());
@@ -131,18 +108,13 @@ const App = () => {
     console.log("Logging in with", username, password);
     try {
       console.log("login succeed with", username, password);
-      const user = await loginService.login({ username, password });
-
-      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
+      dispatch(userLogin(username, password));
       setUsername("");
       setPassword("");
-      // setErrorMessage([]);
+      dispatch(clearNotification);
     } catch (exception) {
       console.log("Wrong credentials");
       const content = "wrong username or password";
-      // setErrorMessage([content, "error"]);
       setTimeout(() => {
         dispatch(clearNotification());
       }, 8000);
@@ -155,7 +127,7 @@ const App = () => {
   const handleLogout = () => {
     console.log(`${user.name} log out`);
     window.localStorage.removeItem("loggedBloglistUser");
-    setUser(null);
+    dispatch(userLogout());
   };
 
   const blogFormRef = useRef();

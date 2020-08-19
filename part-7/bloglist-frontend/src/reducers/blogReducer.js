@@ -43,7 +43,12 @@ export const updateBlog = (newBlog) => {
 export const removeBlog = (blogId) => {
   return async (dispatch) => {
     const response = await blogService.remove(blogId);
-    dispatch({ type: "REMOVE_BLOG", data: blogId });
+    console.log(response);
+    if (response.status === 204) {
+      dispatch({ type: "REMOVE_BLOG", data: blogId });
+    } else {
+      dispatch({ type: "failed" });
+    }
   };
 };
 

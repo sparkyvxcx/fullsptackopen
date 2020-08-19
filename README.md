@@ -35,8 +35,14 @@ My full stack open 2020 submissions
 
 - [x] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-5/bloglist-frontend
 
-
 ## [Part-6](part-6)
 
 - [x] [unicafe-redux]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-6/unicafe-redux
 - [x] [anecdotes-redux]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-6/anecdotes-redux
+
+## [Part-7](part-7)
+
+- [x] [country-hook]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/country-hook
+- [x] [routed-anecdotes]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/routed-anecdotes
+- [x] [ultimate-hooks]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/ultimate-hooks
+- [ ] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/bloglist-frontend
