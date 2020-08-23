@@ -1,4 +1,4 @@
-const initialNotify = ["Hello world"];
+const initialNotify = [];
 
 const notificationReducer = (state = initialNotify, action) => {
   console.log("Action: ", action);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Switch, Route, Link, useRouteMatch, Redirect } from "react-router-dom";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
@@ -17,6 +18,31 @@ import {
   clearNotification,
 } from "./reducers/notificationReducer";
 import { userLogin, userLogout, userInit } from "./reducers/loginReducer";
+import { initializeUsers } from "./reducers/userReducer";
+
+const Users = ({ users }) => {
+  return (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>blogs created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.name}</td>
+              <td>{user.blogs.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const App = () => {
   const [username, setUsername] = useState("");
@@ -24,7 +50,10 @@ const App = () => {
 
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blog);
+  const users = useSelector((state) => state.user);
   const user = useSelector((state) => state.signeduser);
+
+  console.log("user_init:", users);
 
   // load credentials from local storage
   useEffect(() => {
@@ -40,6 +69,7 @@ const App = () => {
     console.log("user:", user);
     if (user !== null) {
       dispatch(initializeBlogs());
+      dispatch(initializeUsers());
     }
   }, [dispatch, user]);
 
@@ -164,6 +194,45 @@ const App = () => {
     </div>
   );
 
+  const BlogPage = ({ user, handleLogout, blogFormRef, createBlogTest }) => {
+    // fetch all bloglists from remote database
+    const dispatch = useDispatch();
+    const blogs = useSelector((state) => state.blog);
+    useEffect(() => {
+      dispatch(initializeBlogs());
+    }, [dispatch]);
+
+    const sortedBlogs = blogs.sort((a, b) => (a.likes > b.likes ? -1 : 1));
+    return (
+      <div>
+        <h2>blogs</h2>
+        <Notification />
+        <p>
+          {user.name} logged in <button onClick={handleLogout}>log out</button>
+        </p>
+        <Switch>
+          <Route path="/users">
+            <Users users={users} />
+          </Route>
+          <Route path="/">
+            <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
+              <BlogForm createBlog={createBlogTest} />
+            </Togglable>
+            {sortedBlogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                uid={user.id}
+                updateBlog={updateBlogTest}
+                removeBlog={removeBlogTest}
+              />
+            ))}
+          </Route>
+        </Switch>
+      </div>
+    );
+  };
+
   const blogPage = () => (
     <div>
       <h2>blogs</h2>
@@ -171,18 +240,25 @@ const App = () => {
       <p>
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
-      <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={createBlogTest} />
-      </Togglable>
-      {sortedBlogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          uid={user.id}
-          updateBlog={updateBlogTest}
-          removeBlog={removeBlogTest}
-        />
-      ))}
+      <Switch>
+        <Route path="/users">
+          <Users users={users} />
+        </Route>
+        <Route path="/">
+          <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
+            <BlogForm createBlog={createBlogTest} />
+          </Togglable>
+          {sortedBlogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              uid={user.id}
+              updateBlog={updateBlogTest}
+              removeBlog={removeBlogTest}
+            />
+          ))}
+        </Route>
+      </Switch>
     </div>
   );
 
