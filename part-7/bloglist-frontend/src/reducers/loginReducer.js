@@ -23,10 +23,12 @@ export const userInit = (user) => {
 
 export const userLogin = (username, password) => {
   return async (dispatch) => {
-    const user = await loginService.login({ username, password });
-    window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
-    blogService.setToken(user.token);
-    dispatch({ type: "USER_LOGIN", data: user });
+    try {
+      const user = await loginService.login({ username, password });
+      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
+      blogService.setToken(user.token);
+      dispatch({ type: "USER_LOGIN", data: user });
+    } catch (err) {}
   };
 };
 

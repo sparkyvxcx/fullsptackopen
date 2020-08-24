@@ -1,77 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Switch, Route, Link, useRouteMatch, Redirect } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { Switch, Route, useRouteMatch, Redirect } from "react-router-dom";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
+import Menu from "./components/Menu";
+import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import BlogView from "./components/BlogView";
 import UserView from "./components/UserView";
+import Users from "./components/User";
 import "./App.css";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   initializeBlogs,
   createBlog,
   updateBlog,
   removeBlog,
 } from "./reducers/blogReducer";
-
 import {
   createNotification,
   clearNotification,
 } from "./reducers/notificationReducer";
-import { userLogin, userLogout, userInit } from "./reducers/loginReducer";
+import { userInit } from "./reducers/loginReducer";
 import { initializeUsers } from "./reducers/userReducer";
 
-const Menu = () => {
-  const padding = {
-    paddingRight: 5,
-  };
-  return (
-    <div style={{ display: "flex" }}>
-      <div style={{ marginRight: "10px" }}>Test Menu</div>
-      <Link style={padding} to="/">
-        blogs
-      </Link>
-      <Link style={padding} to="/users">
-        users
-      </Link>
-      <Link style={padding} to="/about">
-        about
-      </Link>
-    </div>
-  );
-};
-
-const Users = ({ users }) => {
-  return (
-    <div>
-      <h2>Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </td>
-              <td>{user.blogs.length}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
 const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blog);
   const users = useSelector((state) => state.user);
@@ -157,66 +111,9 @@ const App = () => {
     }
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    console.log("Logging in with", username, password);
-    try {
-      console.log("login succeed with", username, password);
-      dispatch(userLogin(username, password));
-      setUsername("");
-      setPassword("");
-      dispatch(clearNotification);
-    } catch (exception) {
-      console.log("Wrong credentials");
-      const content = "wrong username or password";
-      setTimeout(() => {
-        dispatch(clearNotification());
-      }, 8000);
-      dispatch(createNotification([content, "error"]));
-    }
-  };
-
   const sortedBlogs = blogs.sort((a, b) => (a.likes > b.likes ? -1 : 1));
 
-  const handleLogout = () => {
-    console.log(`${user.name} log out`);
-    window.localStorage.removeItem("loggedBloglistUser");
-    dispatch(userLogout());
-  };
-
   const blogFormRef = useRef();
-
-  const loginForm = () => (
-    <div>
-      <h1>log in to application</h1>
-      <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            id="username"
-            type="text"
-            name="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            id="password"
-            type="password"
-            name="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button id="login-button" type="submit">
-          login
-        </button>
-      </form>
-    </div>
-  );
 
   const BlogPage = ({ user, handleLogout, blogFormRef, createBlogTest }) => {
     // fetch all bloglists from remote database
@@ -270,11 +167,8 @@ const App = () => {
 
   const blogPage = () => (
     <div>
-      <h2>blogs</h2>
+      <h2>blogs app</h2>
       <Notification />
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>log out</button>
-      </p>
       <Switch>
         <Route path="/blogs/:id">
           <BlogView blog={blogToShow} />
@@ -305,8 +199,14 @@ const App = () => {
 
   return (
     <div>
-      <Menu />
-      {user === null ? loginForm() : blogPage()}
+      {user === null ? (
+        <LoginForm />
+      ) : (
+        <div>
+          <Menu username={user.name} />
+          {blogPage()}
+        </div>
+      )}
     </div>
   );
 };

@@ -20,7 +20,7 @@ const BlogView = ({ blog }) => {
     <div>
       <h2>{blog.title}</h2>
       <div>
-        <a>{blog.url}</a>
+        <a href={blog.url}>{blog.url}</a>
       </div>
       <div>
         {blog.likes} likes

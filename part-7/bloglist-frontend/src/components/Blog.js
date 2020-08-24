@@ -19,9 +19,9 @@ const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
     showRemove = { display: buid === uid ? "" : "none" };
   }
 
-  const onClickHanlde = () => {
-    setShow(!show);
-  };
+  // const onClickHanlde = () => {
+  //   setShow(!show);
+  // };
 
   const onLikeHanlde = () => {
     blog.likes++;
