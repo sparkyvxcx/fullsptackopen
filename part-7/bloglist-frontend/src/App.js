@@ -3,6 +3,8 @@ import { Switch, Route, Link, useRouteMatch, Redirect } from "react-router-dom";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import BlogForm from "./components/BlogForm";
+import BlogView from "./components/BlogView";
+import UserView from "./components/UserView";
 import "./App.css";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +27,8 @@ const Menu = () => {
     paddingRight: 5,
   };
   return (
-    <div>
+    <div style={{ display: "flex" }}>
+      <div style={{ marginRight: "10px" }}>Test Menu</div>
       <Link style={padding} to="/">
         blogs
       </Link>
@@ -35,25 +38,6 @@ const Menu = () => {
       <Link style={padding} to="/about">
         about
       </Link>
-    </div>
-  );
-};
-
-const User = ({ user }) => {
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <div>
-      <h2>{user.name}</h2>
-      <h3>added blogs</h3>
-      <ul>
-        {user.blogs.map((blog) => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
-        <li>Placeholder for testing</li>
-      </ul>
     </div>
   );
 };
@@ -273,10 +257,15 @@ const App = () => {
     );
   };
 
-  const match = useRouteMatch("/users/:id");
+  const matchUser = useRouteMatch("/users/:id");
+  const matchBlog = useRouteMatch("/blogs/:id");
 
-  const userToShow = match
-    ? users.find((user) => user.id === match.params.id)
+  const userToShow = matchUser
+    ? users.find((user) => user.id === matchUser.params.id)
+    : null;
+
+  const blogToShow = matchBlog
+    ? blogs.find((blog) => blog.id === matchBlog.params.id)
     : null;
 
   const blogPage = () => (
@@ -287,8 +276,11 @@ const App = () => {
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
       <Switch>
+        <Route path="/blogs/:id">
+          <BlogView blog={blogToShow} />
+        </Route>
         <Route path="/users/:id">
-          <User user={userToShow} />
+          <UserView user={userToShow} />
         </Route>
         <Route path="/users">
           <Users users={users} />

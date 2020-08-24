@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
   const blogStyle = {
@@ -38,8 +39,9 @@ const Blog = ({ blog, uid, updateBlog, removeBlog }) => {
   return (
     <div id="blog-item" style={blogStyle}>
       <div className="blogTitleAuthor">
-        {blog.title} {blog.author}
-        <button onClick={onClickHanlde}>{show ? "hide" : "view"}</button>
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title} {blog.author}
+        </Link>
       </div>
       <div style={showDetail} className="detailContent">
         <div>{blog.url}</div>
