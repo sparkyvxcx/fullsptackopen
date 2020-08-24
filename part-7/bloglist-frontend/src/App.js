@@ -20,6 +20,44 @@ import {
 import { userLogin, userLogout, userInit } from "./reducers/loginReducer";
 import { initializeUsers } from "./reducers/userReducer";
 
+const Menu = () => {
+  const padding = {
+    paddingRight: 5,
+  };
+  return (
+    <div>
+      <Link style={padding} to="/">
+        blogs
+      </Link>
+      <Link style={padding} to="/users">
+        users
+      </Link>
+      <Link style={padding} to="/about">
+        about
+      </Link>
+    </div>
+  );
+};
+
+const User = ({ user }) => {
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <h3>added blogs</h3>
+      <ul>
+        {user.blogs.map((blog) => (
+          <li key={blog.id}>{blog.title}</li>
+        ))}
+        <li>Placeholder for testing</li>
+      </ul>
+    </div>
+  );
+};
+
 const Users = ({ users }) => {
   return (
     <div>
@@ -34,7 +72,9 @@ const Users = ({ users }) => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
@@ -233,6 +273,12 @@ const App = () => {
     );
   };
 
+  const match = useRouteMatch("/users/:id");
+
+  const userToShow = match
+    ? users.find((user) => user.id === match.params.id)
+    : null;
+
   const blogPage = () => (
     <div>
       <h2>blogs</h2>
@@ -241,6 +287,9 @@ const App = () => {
         {user.name} logged in <button onClick={handleLogout}>log out</button>
       </p>
       <Switch>
+        <Route path="/users/:id">
+          <User user={userToShow} />
+        </Route>
         <Route path="/users">
           <Users users={users} />
         </Route>
@@ -262,7 +311,12 @@ const App = () => {
     </div>
   );
 
-  return <div>{user === null ? loginForm() : blogPage()}</div>;
+  return (
+    <div>
+      <Menu />
+      {user === null ? loginForm() : blogPage()}
+    </div>
+  );
 };
 
 export default App;
