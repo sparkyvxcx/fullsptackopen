@@ -127,7 +127,12 @@ blogRouter.post("/:id/comments", async (request, response) => {
   const savedComment = await comment.save();
 
   targetBlog.comments = targetBlog.comments.concat(savedComment);
-  const updatedBlog = await targetBlog.save();
+  await targetBlog.save();
+  const updatedBlog = await Blog.findById(id).populate("comments", {
+    content: 1,
+    date: 1,
+  });
+
   response.json(updatedBlog);
 });
 

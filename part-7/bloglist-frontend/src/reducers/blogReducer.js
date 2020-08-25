@@ -52,4 +52,13 @@ export const removeBlog = (blogId) => {
   };
 };
 
+export const addBlogComment = (blogId, comment) => {
+  return async (dispatch) => {
+    const response = await blogService.addComment(blogId, comment);
+    if (response.status === 200) {
+      dispatch({ type: "UPDATE_BLOG", data: response.data });
+    }
+  };
+};
+
 export default reducer;
