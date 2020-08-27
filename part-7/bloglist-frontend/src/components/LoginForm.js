@@ -6,6 +6,7 @@ import {
   createNotification,
   clearNotification,
 } from "../reducers/notificationReducer";
+import { Button, Form } from "react-bootstrap";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -35,31 +36,29 @@ const LoginForm = () => {
     <div>
       <h1>log in to application</h1>
       <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
+      <Form onSubmit={handleLogin}>
+        <Form.Group>
+          <Form.Label>username:</Form.Label>
+          <Form.Control
             id="username"
             type="text"
             name="username"
             value={username}
             onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
+          ></Form.Control>
+          <Form.Label>password:</Form.Label>
+          <Form.Control
             id="password"
             type="password"
             name="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button id="login-button" type="submit">
-          login
-        </button>
-      </form>
+          ></Form.Control>
+          <Button id="login-button" type="submit">
+            login
+          </Button>
+        </Form.Group>
+      </Form>
     </div>
   );
 };

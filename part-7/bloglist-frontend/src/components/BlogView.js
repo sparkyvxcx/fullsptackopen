@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateBlog, addBlogComment } from "../reducers/blogReducer";
+import { Form, Button, Table } from "react-bootstrap";
 
 const BlogView = ({ blog }) => {
   const [comment, setComment] = useState("");
@@ -30,16 +31,16 @@ const BlogView = ({ blog }) => {
       </div>
       <div>
         {blog.likes} likes
-        <button className="likeButton" onClick={onLikeHanlde}>
+        <Button className="likeButton" onClick={onLikeHanlde}>
           like
-        </button>
+        </Button>
       </div>
       {blog.user ? <div>added by {blog.user.name}</div> : null}
       <div>
         <h3>comments</h3>
         <div>
-          <form onSubmit={addComment}>
-            <input
+          <Form onSubmit={addComment} style={{ display: "flex" }}>
+            <Form.Control
               id="comment"
               name="comment"
               type="text"
@@ -47,15 +48,19 @@ const BlogView = ({ blog }) => {
               onChange={({ target }) => {
                 setComment(target.value);
               }}
-            />
-            <button type="submit">add comment</button>
-          </form>
+            ></Form.Control>
+            <Button type="submit">comment</Button>
+          </Form>
         </div>
-        <ul>
-          {blog.comments.map((comment) => (
-            <li key={comment.id}>{comment.content}</li>
-          ))}
-        </ul>
+        <Table striped>
+          <tbody>
+            {blog.comments.map((comment) => (
+              <tr key={comment.id}>
+                <td>{comment.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     </div>
   );

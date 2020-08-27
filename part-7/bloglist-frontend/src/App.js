@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Switch, Route, useRouteMatch, Redirect } from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import Menu from "./components/Menu";
@@ -11,6 +11,8 @@ import Users from "./components/User";
 import "./App.css";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
+
+import { Table } from "react-bootstrap";
 
 import {
   initializeBlogs,
@@ -115,45 +117,6 @@ const App = () => {
 
   const blogFormRef = useRef();
 
-  const BlogPage = ({ user, handleLogout, blogFormRef, createBlogTest }) => {
-    // fetch all bloglists from remote database
-    const dispatch = useDispatch();
-    const blogs = useSelector((state) => state.blog);
-    useEffect(() => {
-      dispatch(initializeBlogs());
-    }, [dispatch]);
-
-    const sortedBlogs = blogs.sort((a, b) => (a.likes > b.likes ? -1 : 1));
-    return (
-      <div>
-        <h2>blogs</h2>
-        <Notification />
-        <p>
-          {user.name} logged in <button onClick={handleLogout}>log out</button>
-        </p>
-        <Switch>
-          <Route path="/users">
-            <Users users={users} />
-          </Route>
-          <Route path="/">
-            <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
-              <BlogForm createBlog={createBlogTest} />
-            </Togglable>
-            {sortedBlogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                uid={user.id}
-                updateBlog={updateBlogTest}
-                removeBlog={removeBlogTest}
-              />
-            ))}
-          </Route>
-        </Switch>
-      </div>
-    );
-  };
-
   const matchUser = useRouteMatch("/users/:id");
   const matchBlog = useRouteMatch("/blogs/:id");
 
@@ -167,7 +130,7 @@ const App = () => {
 
   const blogPage = () => (
     <div>
-      <h2>blogs app</h2>
+      <h2>Blogs app</h2>
       <Notification />
       <Switch>
         <Route path="/blogs/:id">
@@ -183,22 +146,26 @@ const App = () => {
           <Togglable buttonLabel="Create new blog" ref={blogFormRef}>
             <BlogForm createBlog={createBlogTest} />
           </Togglable>
-          {sortedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              uid={user.id}
-              updateBlog={updateBlogTest}
-              removeBlog={removeBlogTest}
-            />
-          ))}
+          <Table striped>
+            <tbody>
+              {sortedBlogs.map((blog) => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  uid={user.id}
+                  updateBlog={updateBlogTest}
+                  removeBlog={removeBlogTest}
+                />
+              ))}
+            </tbody>
+          </Table>
         </Route>
       </Switch>
     </div>
   );
 
   return (
-    <div>
+    <div className="container">
       {user === null ? (
         <LoginForm />
       ) : (
