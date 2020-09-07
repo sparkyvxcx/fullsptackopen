@@ -45,4 +45,4 @@ My full stack open 2020 submissions
 - [x] [country-hook]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/country-hook
 - [x] [routed-anecdotes]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/routed-anecdotes
 - [x] [ultimate-hooks]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/ultimate-hooks
-- [ ] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/bloglist-frontend
+- [x] [bloglist-frontend]: https://github.com/sparkyvxcx/fullsptackopen/tree/master/part-7/bloglist-frontend
